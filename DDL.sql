@@ -1,14 +1,13 @@
--- ============================================================================
--- DDL.sql: Creación de tablas y restricciones del modelo relacional
--- Base de datos centralizada: ConeSTeam
--- ============================================================================
-IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'ConeSTeam')
+/* DDL.sql: Creación de tablas y restricciones del modelo relacional
+    Base de datos centralizada: ConeSTeamDB */
+
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'ConeSTeamDB')
 BEGIN
-    CREATE DATABASE ConeSTeam;
+    CREATE DATABASE ConeSTeamDB;
 END
 GO
 
-USE ConeSTeam;
+USE ConeSTeamDB;
 GO
 
 -- Limpieza preventiva en orden inverso a sus dependencias
@@ -18,7 +17,7 @@ DROP TABLE IF EXISTS Factura;
 DROP TABLE IF EXISTS Metodo_Pago;
 DROP TABLE IF EXISTS Suscripcion_Mod;
 DROP TABLE IF EXISTS Resena;
-DROP TABLE IF EXISTS Carrito;
+DROP TABLE IF EraXISTS Carrito;
 DROP TABLE IF EXISTS Lista_Deseos;
 DROP TABLE IF EXISTS Biblioteca;
 DROP TABLE IF EXISTS Desbloqueo_Logro;
@@ -49,6 +48,7 @@ CREATE TABLE Empresa_Corporativa (
     Pais_Origen NVARCHAR(60) NOT NULL,
     Fecha_Fundacion DATE NOT NULL,
     ID_Empresa_Matriz INT NULL,
+    CONSTRAINT UQ_Empresa_Nombre UNIQUE (Nombre),
     CONSTRAINT FK_Empresa_Matriz FOREIGN KEY (ID_Empresa_Matriz) REFERENCES Empresa_Corporativa(ID_Empresa),
     CONSTRAINT CK_Empresa_NoAutoMatriz CHECK (ID_Empresa_Matriz IS NULL OR ID_Empresa_Matriz <> ID_Empresa)
 );
@@ -109,7 +109,7 @@ CREATE TABLE DLC (
     CONSTRAINT FK_DLC_Producto FOREIGN KEY (ID_Producto) REFERENCES Producto_Digital(ID_Producto),
     CONSTRAINT FK_DLC_JuegoBase FOREIGN KEY (ID_Juego_Base) REFERENCES Juego_Base(ID_Producto),
     CONSTRAINT CK_DLC_Tipo_Contenido CHECK (Tipo_Contenido IN ('Jugable', 'Banda_Sonora', 'Arte')),
-    CONSTRAINT CK_DLC_Subtipo_Jugable CHECK (Subtipo_Jugable IS NULL OR Subtipo_Jugable IN ('Personaje', 'Mapa', 'Modo_Juego', 'Cosmetico')),
+    CONSTRAINT CK_DLC_Subtipo_Jugable CHECK (Subtipo_Jugable IS NULL OR Subtipo_Jugable IN  ('Personaje', 'Mapa', 'Modo_Juego', 'Cosmetico')),
     CONSTRAINT CK_DLC_Regla_Subtipo CHECK (
         (Tipo_Contenido = 'Jugable' AND Subtipo_Jugable IS NOT NULL) OR
         (Tipo_Contenido <> 'Jugable' AND Subtipo_Jugable IS NULL)
@@ -147,7 +147,8 @@ GO
 CREATE TABLE Categoria_Oficial (
     ID_Categoria INT IDENTITY(1,1) PRIMARY KEY,
     Nombre_Categoria NVARCHAR(100) NOT NULL,
-    Descripcion_Categoria NVARCHAR(300) NOT NULL
+    Descripcion_Categoria NVARCHAR(300) NOT NULL,
+    CONSTRAINT UQ_Categoria_Nombre UNIQUE (Nombre_Categoria)
 );
 GO
 
@@ -164,7 +165,8 @@ GO
 -- 10. Idioma
 CREATE TABLE Idioma (
     ID_Idioma INT IDENTITY(1,1) PRIMARY KEY,
-    Nombre_Idioma NVARCHAR(100) NOT NULL
+    Nombre_Idioma NVARCHAR(100) NOT NULL,
+    CONSTRAINT UQ_Idioma_Nombre UNIQUE (Nombre_Idioma)
 );
 GO
 
@@ -184,7 +186,8 @@ GO
 -- 12. Etiqueta_Comunidad
 CREATE TABLE Etiqueta_Comunidad (
     ID_Etiqueta INT IDENTITY(1,1) PRIMARY KEY,
-    Nombre_Etiqueta NVARCHAR(100) NOT NULL
+    Nombre_Etiqueta NVARCHAR(100) NOT NULL,
+    CONSTRAINT UQ_Etiqueta_Nombre UNIQUE (Nombre_Etiqueta)
 );
 GO
 
@@ -223,6 +226,8 @@ CREATE TABLE Usuario (
     Fecha_Registro DATE NOT NULL,
     Pais_Residencia NVARCHAR(60) NOT NULL,
     Estado_Cuenta VARCHAR(20) NOT NULL,
+    CONSTRAINT UQ_Usuario_Nickname UNIQUE (Nickname),
+    CONSTRAINT UQ_Usuario_Correo UNIQUE (Correo),
     CONSTRAINT CK_Usuario_Estado CHECK (Estado_Cuenta IN ('Activa', 'Suspendida', 'Baneada')),
     CONSTRAINT CK_Usuario_Edad CHECK (Fecha_Nacimiento <= DATEADD(YEAR, -13, Fecha_Registro))
 );
@@ -322,7 +327,8 @@ CREATE TABLE Metodo_Pago (
     ID_Metodo_Pago INT IDENTITY(1,1) PRIMARY KEY,
     Nombre_Metodo NVARCHAR(100) NOT NULL,
     Moneda VARCHAR(10) NOT NULL,
-    Requiere_Validacion BIT NOT NULL
+    Requiere_Validacion BIT NOT NULL,
+    CONSTRAINT UQ_MetodoPago_Nombre UNIQUE (Nombre_Metodo)
 );
 GO
 
@@ -337,6 +343,7 @@ CREATE TABLE Factura (
     Total_Pagado DECIMAL(10,2) NOT NULL,
     ID_Usuario INT NOT NULL,
     ID_Metodo_Pago INT NOT NULL,
+    CONSTRAINT UQ_Factura_CodigoTransaccion UNIQUE (Codigo_Transaccion),
     CONSTRAINT FK_Factura_Usuario FOREIGN KEY (ID_Usuario) REFERENCES Usuario(ID_Usuario),
     CONSTRAINT FK_Factura_MetodoPago FOREIGN KEY (ID_Metodo_Pago) REFERENCES Metodo_Pago(ID_Metodo_Pago),
     CONSTRAINT CK_Factura_SubTotal CHECK (Sub_Total >= 0),

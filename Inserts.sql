@@ -1,8 +1,5 @@
--- ============================================================================
--- Inserts.sql: Carga inicial y masiva de datos (Data Seeding)
--- Base de datos centralizada: ConeSTeam
--- ============================================================================
-USE ConeSTeam;
+-- Data Seeding
+USE ConeSTeamDB;
 GO
 
 SET NOCOUNT ON;

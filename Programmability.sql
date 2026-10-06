@@ -1,22 +1,12 @@
-﻿USE ConeSTeam;
+﻿USE ConeSTeamDB;
 GO
-
--- ============================================================================
--- PROYECTO FASE 2 - BASES DE DATOS [6303]
--- ARCHIVO: Programmability.sql
--- ============================================================================
-
--- ============================================================================
--- PARTE 1: FUNCIONES ESCALARES (UDF)
--- ============================================================================
-
--- ----------------------------------------------------------------------------
--- 1. fn_calcular_impuesto(@monto)
--- Objetivo: Calcula el impuesto sobre las ventas (IVA del 16%).
--- Justificación para la defensa:
--- La tasa del 16% está definida en una variable interna @tasa_iva. Si en el
--- futuro la tasa cambia, solo se modifica en esta línea centralizada.
--- ----------------------------------------------------------------------------
+/*
+ Programmability.sql
+ PARTE 1: FUNCIONES ESCALARES (UDF)
+ ----------------------------------------------------------------------------
+ 1. fn_calcular_impuesto(@monto)
+ Objetivo: Calcula el impuesto sobre las ventas (IVA del 16%).
+ ---------------------------------------------------------------------------- */
 CREATE OR ALTER FUNCTION dbo.fn_calcular_impuesto (@monto DECIMAL(10,2))
 RETURNS DECIMAL(10,2)
 AS
