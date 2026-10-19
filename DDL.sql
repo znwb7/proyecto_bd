@@ -17,7 +17,7 @@ DROP TABLE IF EXISTS Factura;
 DROP TABLE IF EXISTS Metodo_Pago;
 DROP TABLE IF EXISTS Suscripcion_Mod;
 DROP TABLE IF EXISTS Resena;
-DROP TABLE IF EraXISTS Carrito;
+DROP TABLE IF EXISTS Carrito;
 DROP TABLE IF EXISTS Lista_Deseos;
 DROP TABLE IF EXISTS Biblioteca;
 DROP TABLE IF EXISTS Desbloqueo_Logro;
@@ -306,6 +306,7 @@ CREATE TABLE Resena (
     Es_Critica_Especializada BIT NOT NULL,
     CONSTRAINT FK_Resena_Usuario FOREIGN KEY (ID_Usuario) REFERENCES Usuario(ID_Usuario),
     CONSTRAINT FK_Resena_Producto FOREIGN KEY (ID_Producto) REFERENCES Producto_Digital(ID_Producto),
+    CONSTRAINT UQ_Resena_Usuario_Producto UNIQUE (ID_Usuario, ID_Producto),
     CONSTRAINT CK_Resena_Calificacion CHECK (Calificacion_1_10 BETWEEN 1 AND 10)
 );
 GO
@@ -375,8 +376,8 @@ CREATE TABLE Reembolso (
     Fecha_Reembolso DATETIME2 NOT NULL,
     Monto_Reembolsado DECIMAL(10,2) NOT NULL,
     Motivo NVARCHAR(250) NOT NULL,
-    CONSTRAINT FK_Reembolso_Factura FOREIGN KEY (ID_Factura) REFERENCES Factura(ID_Factura),
-    CONSTRAINT FK_Reembolso_Producto FOREIGN KEY (ID_Producto) REFERENCES Producto_Digital(ID_Producto),
+    CONSTRAINT FK_Reembolso_Detalle FOREIGN KEY (ID_Factura, ID_Producto) REFERENCES Detalle_Factura(ID_Factura, ID_Producto),
+    CONSTRAINT UQ_Reembolso_Linea UNIQUE (ID_Factura, ID_Producto),
     CONSTRAINT CK_Reembolso_Monto CHECK (Monto_Reembolsado >= 0)
 );
 GO

@@ -1,4 +1,4 @@
-El proyecto consiste en construir una base de datos completa en **SQL Server/T-SQL** para una tienda digital: modelo relacional, datos de prueba, consultas analíticas, procedimientos almacenados, funciones, triggers y entrega documentada. Esta lista divide el enunciado en tareas atómicas y en un orden práctico de ejecución.[ppl-ai-file-upload.s3.amazonaws]
+El proyecto consiste en construir una base de datos completa en **SQL Server/T-SQL** para una tienda digital: modelo relacional, datos de prueba, consultas analíticas, procedimientos almacenados, funciones, triggers y entrega documentada. Esta lista divide el enunciado en tareas atómicas y en un orden práctico de ejecución.
 
 # 1. Organización del proyecto
 
@@ -93,7 +93,7 @@ Crear las 28 tablas en un orden que respete sus dependencias.
 1. Crear `Historial_Descuento`.
 2. Crear `Registro_Concurrencia`.
 
-Aunque el enunciado enumera 28 elementos, `Empresa_Corporativa` hasta `Registro_Concurrencia` deben revisarse cuidadosamente porque algunas tablas contienen relaciones y claves compuestas.
+El modelo tiene 28 tablas. Revisar con cuidado las que tienen claves compuestas, porque sus FK también deben ser compuestas (ver 3.5).
 
 ## 3.4 Definir claves primarias
 
@@ -144,6 +144,14 @@ Aunque el enunciado enumera 28 elementos, `Empresa_Corporativa` hasta `Registro_
 22. Conectar `Reembolso` con factura y producto.
 23. Conectar `Historial_Descuento` con producto.
 24. Conectar `Registro_Concurrencia` con producto.
+
+FK compuestas obligatorias (no basta con FK sueltas a cada tabla):
+
+- `Desbloqueo_Logro(ID_Juego_Base, ID_Logro)` → `Logro(ID_Juego_Base, ID_Logro)`.
+- `Suscripcion_Mod(ID_Producto_Base, ID_Mod)` → `Mod(ID_Producto_Base, ID_Mod)`.
+- `Reembolso(ID_Factura, ID_Producto)` → `Detalle_Factura(ID_Factura, ID_Producto)`. Así solo se puede reembolsar un producto que estaba en esa factura.
+- `Logro`, `Mod` y `DLC.ID_Juego_Base` apuntan a `Juego_Base`, no a `Producto_Digital` (restricción G del enunciado).
+- `Mod` es nombre delicado en T-SQL: escribirlo siempre como `[Mod]`.
 
 ## 3.6 Implementar restricciones `NOT NULL`
 
@@ -223,6 +231,8 @@ Crear `CHECK` para:
 18. `Horas_Jugadas >= 0`.
 19. `Cantidad_Votos >= 0`.
 20. `Pico_Maximo_Jugadores >= 0`.
+21. `Usuario.Fecha_Nacimiento`: mayor de 13 años (consideración C). Documentar en el informe si se compara contra `Fecha_Registro` o contra `GETDATE()`.
+22. `Subtipo_Jugable` obligatorio si `Tipo_Contenido = 'Jugable'` y `NULL` en otro caso. Decidir y documentar si un DLC jugable puede quedar sin subtipo.
 
 ## 3.8 Implementar restricciones de unicidad
 
@@ -253,16 +263,31 @@ Agregar `UNIQUE` para:
 
 # 4. Preparar el Data Seeding
 
+## 4.0 Decisiones previas (críticas)
+
+1. **Fechas relativas a la fecha de ejecución.** Las consultas 1, 12, 14 y 18 usan "último mes", "mes actual" y "último año" respecto a `GETDATE()`. Si las fechas se escriben fijas, los reportes salen vacíos el día de la defensa. Generar las fechas con `DATEADD(..., GETDATE())` o, como mínimo, garantizar facturas, reembolsos y lanzamientos en el mes y año de la entrega.
+2. **Nada en el futuro.** Ninguna factura, reembolso, reseña ni desbloqueo con fecha posterior a la de ejecución.
+3. **Respetar `Lookups.sql`.** Sus IDs y valores no se tocan. Lo único permitido es añadir al menos 4 categorías nuevas con ID desde 17, como pide su cabecera. Si el contenido de `Lookups.sql` va copiado dentro de `Inserts.sql`, debe ser idéntico al original.
+4. **Los triggers no existen durante la carga.** Como `Programmability.sql` se ejecuta después de `Inserts.sql`, la coherencia que darían los triggers se siembra a mano:
+    - Todo producto facturado está en la `Biblioteca` del comprador.
+    - Ningún producto reembolsado sigue en la `Biblioteca`.
+    - Ningún menor compra productos `M` o `AO`.
+    - Ningún DLC en carrito sin su juego base en biblioteca o en el mismo carrito.
+    - Ningún desbloqueo de logro sin el juego en biblioteca.
+5. **Fórmula financiera única** (ver sección 20), aplicada igual en los datos sembrados y en `sp_realizar_compra`.
+
+## 4.1 Orden de inserción
+
 Crear `Inserts.sql` respetando este orden general:
 
-1. Ejecutar el script `Lookups.sql`.
+1. Cargar `Lookups.sql` (ejecutándolo antes, o con su contenido idéntico al principio de `Inserts.sql`, sin ejecutarlo dos veces).
 2. Insertar empresas.
 3. Insertar productos digitales.
 4. Insertar juegos base.
 5. Insertar DLC.
 6. Insertar perfiles de requisitos.
 7. Insertar logros.
-8. Insertar categorías, idiomas y métodos si no vienen completamente cargados.
+8. Añadir las 4 o más categorías nuevas (ID desde 17) que exige `Lookups.sql`.
 9. Insertar etiquetas.
 10. Insertar mods.
 11. Insertar usuarios.
@@ -572,12 +597,12 @@ Crear las funciones en `Programmability.sql` antes de los procedimientos y consu
 
 ## 15.2 Trigger de protección de menores
 
-1. Crear un trigger sobre `Detalle_Factura`.
+1. Crear un trigger sobre `Detalle_Factura`. El enunciado dice "antes de insertar": usar `INSTEAD OF INSERT` o `AFTER INSERT` con `ROLLBACK`, y justificarlo en el informe.
 2. Obtener el usuario de la factura.
 3. Obtener la clasificación del producto.
 4. Detectar clasificaciones `M` y `AO`.
 5. Obtener `Fecha_Nacimiento`.
-6. Calcular la edad.
+6. Calcular la edad exacta (no basta con `DATEDIFF(YEAR, ...)`, que solo resta años y falla antes del cumpleaños).
 7. Rechazar menores de 18 años.
 8. Generar exactamente el mensaje:
     - `Contenido restringido por edad`.
@@ -642,8 +667,9 @@ Crear las funciones en `Programmability.sql` antes de los procedimientos y consu
 16. Dejar que el trigger pueble la biblioteca.
 17. Vaciar el carrito.
 18. Confirmar con `COMMIT`.
-19. Usar `TRY/CATCH`.
-20. Hacer `ROLLBACK` ante error.
+19. Usar `TRY/CATCH` y `SET XACT_ABORT ON`.
+20. Hacer `ROLLBACK` ante error, comprobando antes `@@TRANCOUNT > 0`: si el trigger de menores ya hizo rollback, un segundo `ROLLBACK` da error.
+20b. Relanzar el error con `THROW` para que el mensaje `Contenido restringido por edad` llegue intacto.
 21. Probar carrito vacío.
 22. Probar compra válida.
 23. Probar compra con contenido restringido.
@@ -1101,6 +1127,15 @@ Crear consultas de conteo para comprobar:
 25. Usuarios con suscripciones a mods.
 
 # 20. Revisar consistencia financiera
+
+Fórmula recomendada (documentarla en el informe):
+
+- `Precio_Venta_Historico` = precio efectivo cobrado por la línea, el que devuelve `fn_precio_con_descuento`.
+- `Sub_Total` = suma del precio de referencia de cada línea, antes del descuento (`Precio_Base_En_Evento` si había evento, si no `Precio_Base_Actual`).
+- `Monto_Descuento` = `Sub_Total` − suma de `Precio_Venta_Historico`.
+- `Monto_Impuesto` = `fn_calcular_impuesto(Sub_Total − Monto_Descuento)`.
+- `Total_Pagado` = `Sub_Total − Monto_Descuento + Monto_Impuesto`.
+- `Monto_Reembolsado` = `Precio_Venta_Historico` de la línea, con o sin su IVA. Elegir una opción y aplicarla igual en los datos sembrados y en `sp_procesar_reembolso`.
 
 1. Verificar que `Sub_Total` sea la suma de precios antes de descuento.
 2. Verificar que `Monto_Descuento` sea la diferencia correspondiente.
