@@ -104,7 +104,7 @@ INSERT INTO Empresa_Corporativa (ID_Empresa, Nombre, Pais_Origen, Fecha_Fundacio
 SET IDENTITY_INSERT Empresa_Corporativa OFF;
 GO
 
--- 5. Producto_Digital (300 productos: 210 Juegos Base y 90 DLCs)
+-- 5. Producto_Digital (300 productos: 214 Juegos Base y 90 DLCs)
 SET IDENTITY_INSERT Producto_Digital ON;
 INSERT INTO Producto_Digital (ID_Producto, Titulo, Descripcion_Corta, Descripcion_Larga, Fecha_Lanzamiento, Tamano_GB, Clasificacion_Edad, Precio_Base_Actual, Tipo_Producto, Metacritic_Score) VALUES
   -- Juegos Base
@@ -3797,7 +3797,7 @@ INSERT INTO Logro (ID_Juego_Base, ID_Logro, Nombre_Logro, Descripcion_Logro, Es_
   (89, 3, 'Pescado fresco', 'Derrota a la mutación de Moreau.', 1),
   (89, 4, 'Reparaciones', 'Combina un tesoro hasta alcanzar su forma final.', 0),
   (89, 5, 'Cartógrafo', 'Completa el mapa de la aldea.', 0),
-  (89, 6, '¿Eso es todo?', 'Derrota a Uriaș durante el primer ataque de lycans en la aldea.', 1),
+  (89, 6, '¿Eso es todo?', N'Derrota a Uriaș durante el primer ataque de lycans en la aldea.', 1),
   (89, 7, 'Aceite de serpiente', 'Termina la historia usando cuatro o menos objetos curativos.', 1),
   (89, 8, 'Ratón de biblioteca', 'Lee todas las notas y documentos de la historia.', 0),
   (89, 9, '7 de la suerte', 'Consigue 777 Lei, 7.777 Lei, o 77.777 Lei durante la historia.', 0),
@@ -4726,7 +4726,7 @@ INSERT INTO Logro (ID_Juego_Base, ID_Logro, Nombre_Logro, Descripcion_Logro, Es_
   (189, 3, 'Nepal', 'Atraviesa Nepal en guerra.', 0),
   (189, 4, 'El Himalaya', 'Llega al monasterio del Himalaya.', 0),
   (189, 5, 'Shambhala', 'Encuentra Shambhala.', 0),
-  (189, 6, 'Lazarević', 'Derrota a Zoran Lazarević.', 1),
+  (189, 6, N'Lazarević', N'Derrota a Zoran Lazarević.', 1),
   (189, 7, 'Fin de la aventura', 'Completa la historia.', 1),
   (189, 8, 'Tesoros', 'Encuentra todos los tesoros.', 0),
   (190, 1, 'Roma', 'Llega a Roma.', 0),
@@ -8811,7 +8811,7 @@ INSERT INTO Suscripcion_Mod (ID_Usuario, ID_Producto_Base, ID_Mod, Fecha_Suscrip
   (238, 163, 1, '2025-09-02');
 GO
 
--- 19. Factura y Detalle_Factura (520 facturas con desglose financiero)
+-- 19. Factura y Detalle_Factura (525 facturas con desglose financiero)
 SET IDENTITY_INSERT Factura ON;
 INSERT INTO Factura (ID_Factura, Codigo_Transaccion, Fecha_Hora_Emision, Sub_Total, Monto_Descuento, Monto_Impuesto, Total_Pagado, ID_Usuario, ID_Metodo_Pago) VALUES
   (1, 'TRX-20250627-0001', '2025-06-27 13:09:25', 99.98, 24.00, 12.16, 88.14, 1, 1),
@@ -17398,5 +17398,190 @@ INSERT INTO Registro_Concurrencia (ID_Producto, Fecha_Registro, Pico_Maximo_Juga
   (210, '2026-10-02', 29185);
 GO
 
-PRINT 'Carga masiva completada con éxito en ConeSTeam.';
+-- 27. Lanzamientos recientes (4 Juegos Base publicados en el último año, para el reporte de Tendencias)
+SET IDENTITY_INSERT Producto_Digital ON;
+INSERT INTO Producto_Digital (ID_Producto, Titulo, Descripcion_Corta, Descripcion_Larga, Fecha_Lanzamiento, Tamano_GB, Clasificacion_Edad, Precio_Base_Actual, Tipo_Producto, Metacritic_Score) VALUES
+  (301, 'The Outer Worlds 2', 'RPG de ciencia ficción en primera persona.', 'Como agente del Directorio Terrestre viajas a la colonia de Arcadia, donde una grieta en el espacio amenaza a toda la humanidad. Cada decisión cambia la relación con las facciones y el final de la historia.', '2025-10-29', 80.0, 'M', 69.99, 'Juego_Base', 82),
+  (302, 'Metroid Prime 4: Beyond', 'Aventura de acción en primera persona.', 'Samus Aran queda atrapada en el planeta Viewros y debe dominar nuevos poderes psíquicos para escapar mientras explora biomas interconectados.', '2025-12-04', 9.0, 'T', 69.99, 'Juego_Base', 80),
+  (303, 'Dragon Quest VII Reimagined', 'RPG clásico reconstruido desde cero.', 'Nueva versión del séptimo Dragon Quest: viaja a través del tiempo para restaurar las islas desaparecidas de un mundo que se creía solo en el océano.', '2026-02-05', 12.0, 'T', 59.99, 'Juego_Base', 84),
+  (304, 'Resident Evil Requiem', 'Survival horror en primera y tercera persona.', 'La analista del FBI Grace Ashcroft investiga una serie de muertes misteriosas que la llevan a un hotel abandonado ligado a su propio pasado.', '2026-02-27', 70.0, 'M', 69.99, 'Juego_Base', 89);
+SET IDENTITY_INSERT Producto_Digital OFF;
+GO
+
+INSERT INTO Juego_Base (ID_Producto, ID_Estudio_Dev, ID_Publisher, Motor_Grafico, Tiene_Compras_InGame, Soporta_Cloud_Saves) VALUES
+  (301, 17, 2, 'Unreal Engine 5', 0, 1),
+  (302, 6, 6, 'Motor propio Nintendo', 0, 1),
+  (303, 8, 8, 'Unreal Engine 5', 0, 1),
+  (304, 32, 32, 'RE Engine', 0, 1);
+GO
+
+INSERT INTO Perfil_Requisito (ID_Producto, Tipo_Perfil, Sistema_Operativo, Procesador, Memoria_RAM, Tarjeta_Grafica) VALUES
+  (301, 'Minimo', 'Windows 10 de 64 bits', 'Intel Core i5-8400 o AMD Ryzen 5 2600', '16 GB de RAM', 'NVIDIA GeForce GTX 1660 Ti o AMD Radeon RX 5700'),
+  (301, 'Recomendado', 'Windows 11 de 64 bits', 'Intel Core i7-9700K o AMD Ryzen 7 3700X', '16 GB de RAM', 'NVIDIA GeForce RTX 2080 o AMD Radeon RX 6800 XT'),
+  (302, 'Minimo', 'Nintendo Switch', 'NVIDIA Custom Tegra X1', '4 GB LPDDR4', 'NVIDIA Maxwell integrada'),
+  (302, 'Recomendado', 'Nintendo Switch 2', 'NVIDIA Custom T239', '12 GB LPDDR5X', 'NVIDIA Ampere integrada'),
+  (303, 'Minimo', 'Windows 10 de 64 bits', 'Intel Core i5-6600 o AMD Ryzen 3 1200', '8 GB de RAM', 'NVIDIA GeForce GTX 1050 Ti o AMD Radeon RX 570'),
+  (303, 'Recomendado', 'Windows 11 de 64 bits', 'Intel Core i5-10400 o AMD Ryzen 5 3600', '16 GB de RAM', 'NVIDIA GeForce RTX 2060 o AMD Radeon RX 6600'),
+  (304, 'Minimo', 'Windows 10 de 64 bits', 'Intel Core i5-8500 o AMD Ryzen 5 2600', '16 GB de RAM', 'NVIDIA GeForce GTX 1660 o AMD Radeon RX 5500 XT'),
+  (304, 'Recomendado', 'Windows 11 de 64 bits', 'Intel Core i7-8700 o AMD Ryzen 5 5600', '16 GB de RAM', 'NVIDIA GeForce RTX 2070 o AMD Radeon RX 6700');
+GO
+
+INSERT INTO Soporte_Idioma (ID_Producto, ID_Idioma, Soporta_Interfaz, Soporta_Audio, Soporta_Subtitulos) VALUES
+  (301, 1, 1, 0, 1),
+  (301, 2, 1, 1, 1),
+  (301, 3, 1, 0, 1),
+  (301, 4, 1, 0, 1),
+  (302, 1, 1, 0, 1),
+  (302, 2, 1, 1, 1),
+  (302, 7, 1, 1, 1),
+  (302, 3, 1, 0, 1),
+  (303, 1, 1, 0, 1),
+  (303, 2, 1, 1, 1),
+  (303, 7, 1, 1, 1),
+  (304, 1, 1, 1, 1),
+  (304, 2, 1, 1, 1),
+  (304, 3, 1, 1, 1),
+  (304, 4, 1, 1, 1),
+  (304, 7, 1, 1, 1);
+GO
+
+INSERT INTO Logro (ID_Juego_Base, ID_Logro, Nombre_Logro, Descripcion_Logro, Es_Secreto) VALUES
+  (301, 1, 'Bienvenido a Arcadia', 'Llega a la colonia de Arcadia.', 0),
+  (301, 2, 'Diplomacia armada', 'Completa una misión sin disparar contra ninguna facción.', 0),
+  (301, 3, 'Defecto aprovechado', 'Acepta tu primer defecto de personaje.', 0),
+  (301, 4, 'Tripulación completa', 'Recluta a todos los compañeros.', 0),
+  (301, 5, 'La grieta', 'Descubre el origen de la grieta espacial.', 1),
+  (301, 6, 'Arcadia decide', 'Termina la historia principal.', 0),
+  (302, 1, 'Aterrizaje forzoso', 'Llega a Viewros.', 0),
+  (302, 2, 'Mente afilada', 'Desbloquea tu primer poder psíquico.', 0),
+  (302, 3, 'Explorador de biomas', 'Visita todas las regiones del planeta.', 0),
+  (302, 4, 'Archivista', 'Escanea 100 entradas distintas.', 0),
+  (302, 5, 'Más allá', 'Derrota al jefe final.', 1),
+  (303, 1, 'Primer fragmento', 'Reúne el primer fragmento de tablilla.', 0),
+  (303, 2, 'Islas recuperadas', 'Restaura cinco islas del pasado.', 0),
+  (303, 3, 'Maestro de vocaciones', 'Domina una vocación avanzada.', 0),
+  (303, 4, 'Cazador de monstruos', 'Recluta 30 monstruos distintos.', 0),
+  (303, 5, 'Mundo completo', 'Restaura todas las islas.', 0),
+  (303, 6, 'El rey demonio', 'Derrota al jefe final.', 1),
+  (304, 1, 'Primera noche', 'Sobrevive a la primera noche en el hotel.', 0),
+  (304, 2, 'Analista de campo', 'Resuelve tu primer caso de pruebas.', 0),
+  (304, 3, 'Sin munición', 'Escapa de un enemigo sin disparar.', 0),
+  (304, 4, 'Archivo completo', 'Encuentra todos los documentos.', 0),
+  (304, 5, 'Pasado revelado', 'Descubre la verdad sobre Grace.', 1),
+  (304, 6, 'Réquiem', 'Termina la historia principal.', 0);
+GO
+
+INSERT INTO Juego_Categoria (ID_Producto, ID_Categoria) VALUES
+  (301, 3),
+  (301, 19),
+  (301, 11),
+  (302, 1),
+  (302, 2),
+  (302, 19),
+  (303, 3),
+  (303, 2),
+  (303, 11),
+  (304, 5),
+  (304, 1),
+  (304, 17);
+GO
+
+INSERT INTO Producto_Etiqueta (ID_Producto, ID_Etiqueta, Cantidad_Votos) VALUES
+  (301, 1, 1420),
+  (301, 21, 1310),
+  (301, 33, 1185),
+  (301, 34, 640),
+  (302, 21, 980),
+  (302, 30, 1115),
+  (302, 41, 870),
+  (303, 1, 1260),
+  (303, 30, 905),
+  (303, 7, 1040),
+  (304, 4, 1530),
+  (304, 12, 1215),
+  (304, 7, 990),
+  (304, 23, 760);
+GO
+
+INSERT INTO Galeria_Multimedia (ID_Producto, ID_Multimedia, URL_Archivo, Tipo_Archivo) VALUES
+  (301, 1, 'https://cdn.conesteam.com/media/301/the-outer-worlds-2/screenshot_01.jpg', 'Foto'),
+  (301, 2, 'https://cdn.conesteam.com/media/301/the-outer-worlds-2/trailer_01.mp4', 'Video'),
+  (302, 1, 'https://cdn.conesteam.com/media/302/metroid-prime-4-beyond/screenshot_01.jpg', 'Foto'),
+  (302, 2, 'https://cdn.conesteam.com/media/302/metroid-prime-4-beyond/trailer_01.mp4', 'Video'),
+  (303, 1, 'https://cdn.conesteam.com/media/303/dragon-quest-vii-reimagined/screenshot_01.jpg', 'Foto'),
+  (303, 2, 'https://cdn.conesteam.com/media/303/dragon-quest-vii-reimagined/trailer_01.mp4', 'Video'),
+  (304, 1, 'https://cdn.conesteam.com/media/304/resident-evil-requiem/screenshot_01.jpg', 'Foto'),
+  (304, 2, 'https://cdn.conesteam.com/media/304/resident-evil-requiem/trailer_01.mp4', 'Video');
+GO
+
+-- 28. Compras del día de referencia (2026-10-19 de madrugada, para los reportes de "mes actual")
+/* Garantizan ventas en el mes en curso aunque el script se ejecute el día 1. Sin descuento
+   vigente, así que Precio_Venta_Historico = Precio_Base_Actual. Firaxis (nieta de Take-Two),
+   Playground (Microsoft), Insomniac (Sony) y Maxis (EA) son subsidiarias, para Imperios Corporativos. */
+SET IDENTITY_INSERT Factura ON;
+INSERT INTO Factura (ID_Factura, Codigo_Transaccion, Fecha_Hora_Emision, Sub_Total, Monto_Descuento, Monto_Impuesto, Total_Pagado, ID_Usuario, ID_Metodo_Pago) VALUES
+  (522, 'TRX-20261019-0522', '2026-10-19 00:20:14', 99.98, 0.00, 16.00, 115.98, 82, 1),
+  (523, 'TRX-20261019-0523', '2026-10-19 00:46:51', 59.99, 0.00, 9.60, 69.59, 103, 3),
+  (524, 'TRX-20261019-0524', '2026-10-19 01:12:07', 59.99, 0.00, 9.60, 69.59, 115, 2),
+  (525, 'TRX-20261019-0525', '2026-10-19 01:38:42', 19.99, 0.00, 3.20, 23.19, 121, 7);
+SET IDENTITY_INSERT Factura OFF;
+GO
+
+INSERT INTO Detalle_Factura (ID_Factura, ID_Producto, Precio_Venta_Historico, Descuento_Aplicado_Pct) VALUES
+  (522, 24, 59.99, 0.00),
+  (522, 64, 39.99, 0.00),
+  (523, 68, 59.99, 0.00),
+  (524, 11, 59.99, 0.00),
+  (525, 84, 19.99, 0.00);
+GO
+
+-- Lo que haría el Trigger 3: el producto entra en la Biblioteca sin horas ni sesión
+INSERT INTO Biblioteca (ID_Usuario, ID_Producto, Horas_Jugadas, Fecha_Ultima_Sesion) VALUES
+  (82, 24, 0.00, NULL),
+  (82, 64, 0.00, NULL),
+  (103, 68, 0.00, NULL),
+  (115, 11, 0.00, NULL),
+  (121, 84, 0.00, NULL);
+GO
+
+-- 29. Fechas relativas a la ejecución
+/* Todas las fechas de este script se escribieron tomando como hoy el 2026-10-20.
+   Este bloque las desplaza los días transcurridos desde entonces hasta GETDATE(), para que
+   los reportes de "último mes", "mes actual" y "último año" tengan datos el día en que se
+   ejecute. Como todas se mueven lo mismo, se conservan los intervalos entre ellas: edades,
+   plazo de reembolso, compra antes del desbloqueo, eventos de descuento y lanzamientos. */
+
+DECLARE @dias INT = DATEDIFF(DAY, '2026-10-20', CAST(GETDATE() AS DATE));
+
+IF @dias <> 0
+BEGIN
+    UPDATE Empresa_Corporativa   SET Fecha_Fundacion     = DATEADD(DAY, @dias, Fecha_Fundacion);
+    UPDATE Producto_Digital      SET Fecha_Lanzamiento   = DATEADD(DAY, @dias, Fecha_Lanzamiento);
+    UPDATE Usuario               SET Fecha_Nacimiento    = DATEADD(DAY, @dias, Fecha_Nacimiento),
+                                     Fecha_Registro      = DATEADD(DAY, @dias, Fecha_Registro);
+    UPDATE Amistad_Usuario       SET Fecha_Amistad       = DATEADD(DAY, @dias, Fecha_Amistad);
+    UPDATE Desbloqueo_Logro      SET Fecha_Desbloqueo    = DATEADD(DAY, @dias, Fecha_Desbloqueo);
+    UPDATE Biblioteca            SET Fecha_Ultima_Sesion = DATEADD(DAY, @dias, Fecha_Ultima_Sesion);
+    UPDATE Lista_Deseos          SET Fecha_Agregado      = DATEADD(DAY, @dias, Fecha_Agregado);
+    UPDATE Carrito               SET Fecha_Agregado      = DATEADD(DAY, @dias, Fecha_Agregado);
+    UPDATE Resena                SET Fecha_Publicacion   = DATEADD(DAY, @dias, Fecha_Publicacion);
+    UPDATE Suscripcion_Mod       SET Fecha_Suscripcion   = DATEADD(DAY, @dias, Fecha_Suscripcion);
+    UPDATE Factura               SET Fecha_Hora_Emision  = DATEADD(DAY, @dias, Fecha_Hora_Emision);
+    UPDATE Reembolso             SET Fecha_Reembolso     = DATEADD(DAY, @dias, Fecha_Reembolso);
+    UPDATE Historial_Descuento   SET Fecha_Inicio        = DATEADD(DAY, @dias, Fecha_Inicio),
+                                     Fecha_Fin           = DATEADD(DAY, @dias, Fecha_Fin);
+    UPDATE Registro_Concurrencia SET Fecha_Registro      = DATEADD(DAY, @dias, Fecha_Registro);
+END
+
+/* Los registros con hora del día de referencia posterior a la hora de ejecución quedarían en el
+   futuro. Se llevan a la hora actual */
+DECLARE @ahora DATETIME2 = SYSDATETIME();
+
+UPDATE Factura          SET Fecha_Hora_Emision  = @ahora WHERE Fecha_Hora_Emision  > @ahora;
+UPDATE Reembolso        SET Fecha_Reembolso     = @ahora WHERE Fecha_Reembolso     > @ahora;
+UPDATE Desbloqueo_Logro SET Fecha_Desbloqueo    = @ahora WHERE Fecha_Desbloqueo    > @ahora;
+UPDATE Biblioteca       SET Fecha_Ultima_Sesion = @ahora WHERE Fecha_Ultima_Sesion > @ahora;
+GO
+
+PRINT 'Inserts ejecutados con exito.';
 GO
